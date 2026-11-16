@@ -126,6 +126,112 @@ static void load_customers(void)
     memcpy(need, maximum, (size_t)n_cust * n_res * sizeof *need);
 }
 
+static void print_vec(FILE *out, const int *v)
+{
+    int i;
+
+    for (i = 0; i < n_res; i++)
+        fprintf(out, i ? " %d" : "%d", v[i]);
+}
+
+/* a <= b em todos os recursos? */
+static int fits(const int *a, const int *b)
+{
+    int i;
+
+    for (i = 0; i < n_res; i++)
+        if (a[i] > b[i])
+            return 0;
+    return 1;
+}
+
+/* entrega `req` ao cliente c (sign = 1) ou toma de volta (sign = -1) */
+static void move(int c, const int *req, int sign)
+{
+    int i;
+
+    for (i = 0; i < n_res; i++) {
+        available[i] -= sign * req[i];
+        ROW(allocation, c)[i] += sign * req[i];
+        ROW(need, c)[i] -= sign * req[i];
+    }
+}
+
+/*
+ * Algoritmo de seguranca: o estado e seguro se existe uma ordem em que todo
+ * cliente consegue o que ainda precisa usando o que esta livre mais o que os
+ * clientes anteriores da ordem devolvem ao terminar.
+ */
+static int is_safe(void)
+{
+    int *work = xmalloc((size_t)n_res * sizeof *work);
+    char *finish = xmalloc((size_t)n_cust);
+    int c, i, left = n_cust, progress = 1;
+
+    memcpy(work, available, (size_t)n_res * sizeof *work);
+    memset(finish, 0, (size_t)n_cust);
+    while (left > 0 && progress) {
+        progress = 0;
+        for (c = 0; c < n_cust; c++) {
+            if (finish[c] || !fits(ROW(need, c), work))
+                continue;
+            for (i = 0; i < n_res; i++)
+                work[i] += ROW(allocation, c)[i];
+            finish[c] = 1;
+            left--;
+            progress = 1;
+        }
+    }
+    free(work);
+    free(finish);
+    return left == 0;
+}
+
+static void request(FILE *out, int c, const int *req)
+{
+    if (!fits(req, ROW(need, c))) {
+        fprintf(out, "The customer %d request ", c);
+        print_vec(out, req);
+        fprintf(out, " was denied because exceed its maximum allocation\n");
+        return;
+    }
+    if (!fits(req, available)) {
+        fprintf(out, "The resources ");
+        print_vec(out, available);
+        fprintf(out, " are not enough to customer %d request ", c);
+        print_vec(out, req);
+        fprintf(out, " \n"); /* o result.txt de exemplo tem esse espaco no fim */
+        return;
+    }
+    /* aloca de mentira, testa e desfaz se o estado ficar inseguro */
+    move(c, req, 1);
+    if (!is_safe()) {
+        move(c, req, -1);
+        fprintf(out, "The customer %d request ", c);
+        print_vec(out, req);
+        fprintf(out, " was denied because result in an unsafe state\n");
+        return;
+    }
+    fprintf(out, "Allocate to customer %d the resources ", c);
+    print_vec(out, req);
+    fputc('\n', out);
+}
+
+static void release(FILE *out, int c, const int *req)
+{
+    /* o enunciado nao define este caso; a mensagem segue o padrao das negacoes de RQ */
+    if (!fits(req, ROW(allocation, c))) {
+        fprintf(out, "The customer %d released ", c);
+        print_vec(out, req);
+        fprintf(out, " was denied because exceed its maximum allocation\n");
+        return;
+    }
+    move(c, req, -1);
+    fprintf(out, "Release from customer %d the resources ", c);
+    print_vec(out, req);
+    fputc('\n', out);
+}
+
 /*
  * Interpreta uma linha de commands.txt: "RQ c r1..rn", "RL c r1..rn" ou "*".
  * Devolve 'Q', 'L' ou '*'; em `cmd` ficam o cliente (cmd[0]) e os recursos.
@@ -165,9 +271,14 @@ static void run_commands(FILE *f, FILE *out)
 
     rewind(f);
     while (next_line(f, &line, &cap, &no)) {
-        parse_command(line, no, cmd);
+        char op = parse_command(line, no, cmd);
+
         if (out == NULL)
             continue;
+        if (op == 'Q')
+            request(out, cmd[0], cmd + 1);
+        else if (op == 'L')
+            release(out, cmd[0], cmd + 1);
     }
     if (ferror(f))
         die("Fail to read commands.txt");
@@ -177,7 +288,7 @@ static void run_commands(FILE *f, FILE *out)
 
 int main(int argc, char **argv)
 {
-    FILE *commands;
+    FILE *commands, *result;
     int i;
 
     if (argc < 2)
@@ -193,6 +304,14 @@ int main(int argc, char **argv)
     if (commands == NULL)
         die("Fail to read commands.txt");
     run_commands(commands, NULL);
+
+    /* so chega aqui com todas as entradas validas */
+    result = fopen("result.txt", "w");
+    if (result == NULL)
+        die("Fail to write result.txt");
+    run_commands(commands, result);
+    if (fclose(result) != 0)
+        die("Fail to write result.txt");
 
     fclose(commands);
     free(available);
