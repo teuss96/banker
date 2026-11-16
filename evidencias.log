@@ -1,0 +1,322 @@
+Script started on 2026-11-16 16:34:45-03:00 [COMMAND="date; whoami; pwd; uname -sr; gcc --version | head -1" <not executed on terminal>]
+Mon Nov 16 16:34:45 -03 2026
+pc
+/mnt/c/Users/PC/Downloads/Faculdade/SO/Implementacao05/mrbm
+Linux 6.6.87.2-microsoft-standard-WSL2
+gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+
+Script done on 2026-11-16 16:34:45-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:35:09-03:00 [COMMAND="date; make clean; make; ./banker; echo "exit=0"; ./banker 10 5 7; echo "exit=0"; ./banker 10 -5 7; echo "exit=0"; ./banker 10 x 7; echo "exit=0"; ./banker 99999999999 1; echo "exit=0"" <not executed on terminal>]
+Mon Nov 16 16:35:09 -03 2026
+rm -f banker result.txt
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+Fail: inform the instances of each resource type, e.g. ./banker 10 5 7
+exit=0
+exit=0
+Fail: invalid number of instances '-5' in command line
+exit=0
+Fail: invalid number of instances 'x' in command line
+exit=0
+Fail: invalid number of instances '99999999999' in command line
+exit=0
+
+Script done on 2026-11-16 16:35:11-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:35:23-03:00 [COMMAND="./banker; echo "exit=$?"; ./banker 10 5 7; echo "exit=$?"; ./banker 10 x 7; echo "exit=$?"" <not executed on terminal>]
+Fail: inform the instances of each resource type, e.g. ./banker 10 5 7
+exit=1
+exit=0
+Fail: invalid number of instances 'x' in command line
+exit=1
+
+Script done on 2026-11-16 16:35:23-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:36:12-03:00 [COMMAND="date; make; cd testes/exemplo; ../../banker 10 5 7; echo "exit=$?"; ../../banker 10 5; echo "exit=$?"; ../../banker 10 5 7 1; echo "exit=$?"; cd ..; ../banker 10 5 7; echo "exit=$?"" <not executed on terminal>]
+Mon Nov 16 16:36:12 -03 2026
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+exit=0
+Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 2
+exit=1
+Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 4
+exit=1
+Fail to read customer.txt
+exit=1
+
+Script done on 2026-11-16 16:36:13-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:37:45-03:00 [COMMAND="date; make; sh testes/run.sh ./banker" <not executed on terminal>]
+Mon Nov 16 16:37:45 -03 2026
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+== saida correta
+FAIL - exemplo do enunciado (./banker 10 5 7)
+FAIL - exemplo com fim de linha CRLF e sem 
+ final
+FAIL - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+FAIL - numeros com mais de um digito e pedido de zero recursos
+FAIL - 6 recursos: coluna mais larga que o cabecalho
+FAIL - commands.txt vazio gera result.txt vazio
+FAIL - linhas em branco sao ignoradas
+== tratamento de erro
+ok   - sem argumentos -> Fail: inform the instances of each resource type, e.g. ./banker 10 5 7
+ok   - argumento nao numerico -> Fail: invalid number of instances 'x' in command line
+ok   - argumento negativo -> Fail: invalid number of instances '-5' in command line
+ok   - argumento maior que INT_MAX -> Fail: invalid number of instances '99999999999' in command line
+ok   - menos argumentos que recursos em customer.txt -> Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 2
+ok   - mais argumentos que recursos em customer.txt -> Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 4
+ok   - customer.txt ausente -> Fail to read customer.txt
+ok   - commands.txt ausente -> Fail to read commands.txt
+ok   - customer.txt vazio -> Fail to read customer.txt: no customers
+ok   - customer.txt com letra -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com numero negativo -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com virgula sobrando -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt separado por espaco -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com linha de tamanho diferente -> Incompatibility between customer.txt and command line: line 2 has 2 resources, command line has 3
+ok   - commands.txt com comando desconhecido -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com RQ sem valores -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com lixo depois do * -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com letra -> Fail to read commands.txt: invalid format at line 1
+ok   - commands.txt com numero negativo -> Fail to read commands.txt: invalid format at line 1
+ok   - commands.txt com cliente inexistente -> Fail to read commands.txt: line 1 uses customer 5, but customer.txt has only 5 customers
+ok   - commands.txt com menos recursos que argumentos -> Incompatibility between commands.txt and command line: line 1 has 2 resources, command line has 3
+ok   - commands.txt com mais recursos que argumentos -> Incompatibility between commands.txt and command line: line 1 has 4 resources, command line has 3
+ok   - erro so na ultima linha: nada e executado -> Incompatibility between commands.txt and command line: line 3 has 2 resources, command line has 3
+== 23 ok, 7 falharam
+
+Script done on 2026-11-16 16:37:46-03:00 [COMMAND_EXIT_CODE="1"]
+Script started on 2026-11-16 16:38:42-03:00 [COMMAND="date; make test" <not executed on terminal>]
+Mon Nov 16 16:38:42 -03 2026
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+sh testes/run.sh ./banker
+== saida correta
+FAIL - exemplo do enunciado (./banker 10 5 7)
+6a7,13
+> MAXIMUM   |   ALLOCATION  |   NEED
+> 7 5 3     |   0 1 0       |   7 4 3 
+> 3 2 2     |   2 0 0       |   1 2 2 
+> 9 0 2     |   3 0 2       |   6 0 0 
+> 2 2 2     |   2 1 1       |   0 1 1 
+> 4 3 3     |   0 0 2       |   4 3 1 
+> AVAILABLE 3 3 2 
+FAIL - exemplo com fim de linha CRLF
+6a7,13
+> MAXIMUM   |   ALLOCATION  |   NEED
+> 7 5 3     |   0 1 0       |   7 4 3 
+> 3 2 2     |   2 0 0       |   1 2 2 
+> 9 0 2     |   3 0 2       |   6 0 0 
+> 2 2 2     |   2 1 1       |   0 1 1 
+> 4 3 3     |   0 0 2       |   4 3 1 
+> AVAILABLE 3 3 2 
+FAIL - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+2a3,5
+> MAXIMUM   |   ALLOCATION  |   NEED
+> 5         |   2           |   3 
+> AVAILABLE 3 
+FAIL - numeros com mais de um digito e pedido de zero recursos
+2a3,6
+> MAXIMUM   |   ALLOCATION  |   NEED
+> 100 20    |   60 10       |   40 10 
+> 15 7      |   15 0        |   0 7 
+> AVAILABLE 25 10 
+FAIL - 6 recursos: coluna mais larga que o cabecalho
+0a1,3
+> MAXIMUM     |   ALLOCATION  |   NEED
+> 1 1 1 1 1 1 |   0 0 0 0 0 0 |   1 1 1 1 1 1 
+> AVAILABLE 1 1 1 1 1 1 
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+== tratamento de erro
+ok   - sem argumentos -> Fail: inform the instances of each resource type, e.g. ./banker 10 5 7
+ok   - argumento nao numerico -> Fail: invalid number of instances 'x' in command line
+ok   - argumento negativo -> Fail: invalid number of instances '-5' in command line
+ok   - argumento maior que INT_MAX -> Fail: invalid number of instances '99999999999' in command line
+ok   - menos argumentos que recursos em customer.txt -> Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 2
+ok   - mais argumentos que recursos em customer.txt -> Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 4
+ok   - customer.txt ausente -> Fail to read customer.txt
+ok   - commands.txt ausente -> Fail to read commands.txt
+ok   - customer.txt vazio -> Fail to read customer.txt: no customers
+ok   - customer.txt com letra -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com numero negativo -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com virgula sobrando -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt separado por espaco -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com linha de tamanho diferente -> Incompatibility between customer.txt and command line: line 2 has 2 resources, command line has 3
+ok   - commands.txt com comando desconhecido -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com RQ sem valores -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com lixo depois do * -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com letra -> Fail to read commands.txt: invalid format at line 1
+ok   - commands.txt com numero negativo -> Fail to read commands.txt: invalid format at line 1
+ok   - commands.txt com cliente inexistente -> Fail to read commands.txt: line 1 uses customer 5, but customer.txt has only 5 customers
+ok   - commands.txt com menos recursos que argumentos -> Incompatibility between commands.txt and command line: line 1 has 2 resources, command line has 3
+ok   - commands.txt com mais recursos que argumentos -> Incompatibility between commands.txt and command line: line 1 has 4 resources, command line has 3
+ok   - erro so na ultima linha: nada e executado -> Incompatibility between commands.txt and command line: line 3 has 2 resources, command line has 3
+== 25 ok, 5 falharam
+make: *** [Makefile:9: test] Error 1
+
+Script done on 2026-11-16 16:38:45-03:00 [COMMAND_EXIT_CODE="2"]
+Script started on 2026-11-16 16:39:14-03:00 [COMMAND="date; make clean; make; make test | grep -v "^ok   - .* -> "; cd testes/exemplo; ../../banker 10 5 7; echo "exit=$?"; cmp result.txt esperado.txt && echo IDENTICO; cat -A result.txt | sed -n "7,14p"; rm result.txt" <not executed on terminal>]
+Mon Nov 16 16:39:14 -03 2026
+rm -f banker result.txt
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+sh testes/run.sh ./banker
+== saida correta
+ok   - exemplo do enunciado (./banker 10 5 7)
+ok   - exemplo com fim de linha CRLF
+ok   - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+ok   - numeros com mais de um digito e pedido de zero recursos
+ok   - 6 recursos: coluna mais larga que o cabecalho
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+== tratamento de erro
+== 30 ok, 0 falharam
+exit=0
+IDENTICO
+MAXIMUM   |   ALLOCATION  |   NEED$
+7 5 3     |   0 1 0       |   7 4 3 $
+3 2 2     |   2 0 0       |   1 2 2 $
+9 0 2     |   3 0 2       |   6 0 0 $
+2 2 2     |   2 1 1       |   0 1 1 $
+4 3 3     |   0 0 2       |   4 3 1 $
+AVAILABLE 3 3 2 $
+The resources 3 3 2 are not enough to customer 4 request 4 0 0 $
+
+Script done on 2026-11-16 16:39:18-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:39:39-03:00 [COMMAND="date; make asan" <not executed on terminal>]
+Mon Nov 16 16:39:39 -03 2026
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address,undefined -fno-sanitize-recover=all -o banker_asan banker.c
+sh testes/run.sh ./banker_asan
+== saida correta
+ok   - exemplo do enunciado (./banker 10 5 7)
+ok   - exemplo com fim de linha CRLF
+ok   - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+ok   - numeros com mais de um digito e pedido de zero recursos
+ok   - 6 recursos: coluna mais larga que o cabecalho
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+== tratamento de erro
+ok   - sem argumentos -> Fail: inform the instances of each resource type, e.g. ./banker 10 5 7
+ok   - argumento nao numerico -> Fail: invalid number of instances 'x' in command line
+ok   - argumento negativo -> Fail: invalid number of instances '-5' in command line
+ok   - argumento maior que INT_MAX -> Fail: invalid number of instances '99999999999' in command line
+ok   - menos argumentos que recursos em customer.txt -> Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 2
+ok   - mais argumentos que recursos em customer.txt -> Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 4
+ok   - customer.txt ausente -> Fail to read customer.txt
+ok   - commands.txt ausente -> Fail to read commands.txt
+ok   - customer.txt vazio -> Fail to read customer.txt: no customers
+ok   - customer.txt com letra -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com numero negativo -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com virgula sobrando -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt separado por espaco -> Fail to read customer.txt: invalid format at line 1
+ok   - customer.txt com linha de tamanho diferente -> Incompatibility between customer.txt and command line: line 2 has 2 resources, command line has 3
+ok   - commands.txt com comando desconhecido -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com RQ sem valores -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com lixo depois do * -> Fail to read commands.txt: unknown command at line 1
+ok   - commands.txt com letra -> Fail to read commands.txt: invalid format at line 1
+ok   - commands.txt com numero negativo -> Fail to read commands.txt: invalid format at line 1
+ok   - commands.txt com cliente inexistente -> Fail to read commands.txt: line 1 uses customer 5, but customer.txt has only 5 customers
+ok   - commands.txt com menos recursos que argumentos -> Incompatibility between commands.txt and command line: line 1 has 2 resources, command line has 3
+ok   - commands.txt com mais recursos que argumentos -> Incompatibility between commands.txt and command line: line 1 has 4 resources, command line has 3
+ok   - erro so na ultima linha: nada e executado -> Incompatibility between commands.txt and command line: line 3 has 2 resources, command line has 3
+== 30 ok, 0 falharam
+
+Script done on 2026-11-16 16:39:43-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:40:11-03:00 [COMMAND="date; make clean; make; make test | grep -v " -> "; make asan | tail -1; make clean" <not executed on terminal>]
+Mon Nov 16 16:40:11 -03 2026
+rm -f banker banker_asan result.txt
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+sh testes/run.sh ./banker
+== saida correta
+ok   - exemplo do enunciado (./banker 10 5 7)
+ok   - exemplo com fim de linha CRLF
+ok   - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+ok   - numeros com mais de um digito e pedido de zero recursos
+ok   - pedido inseguro e desfeito e passa a caber depois de um RL
+ok   - 6 recursos: coluna mais larga que o cabecalho
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+== tratamento de erro
+== 31 ok, 0 falharam
+== 31 ok, 0 falharam
+rm -f banker banker_asan result.txt
+
+Script done on 2026-11-16 16:40:19-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:41:13-03:00 [COMMAND="date; make; make test | grep -v " -> "" <not executed on terminal>]
+Mon Nov 16 16:41:13 -03 2026
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+sh testes/run.sh ./banker
+== saida correta
+ok   - exemplo do enunciado (./banker 10 5 7)
+ok   - exemplo com fim de linha CRLF
+ok   - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+ok   - numeros com mais de um digito e pedido de zero recursos
+ok   - pedido inseguro e desfeito e passa a caber depois de um RL
+ok   - 6 recursos: coluna mais larga que o cabecalho
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+FAIL - espacos e tabs repetidos entre os valores
+Fail to read commands.txt: invalid format at line 1
+== tratamento de erro
+== 31 ok, 1 falharam
+make: *** [Makefile:9: test] Error 1
+
+Script done on 2026-11-16 16:41:16-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:41:16-03:00 [COMMAND="date; make; make test | grep -v " -> "; make asan | tail -1; make clean" <not executed on terminal>]
+Mon Nov 16 16:41:16 -03 2026
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+sh testes/run.sh ./banker
+== saida correta
+ok   - exemplo do enunciado (./banker 10 5 7)
+ok   - exemplo com fim de linha CRLF
+ok   - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+ok   - numeros com mais de um digito e pedido de zero recursos
+ok   - pedido inseguro e desfeito e passa a caber depois de um RL
+ok   - 6 recursos: coluna mais larga que o cabecalho
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+ok   - espacos e tabs repetidos entre os valores
+== tratamento de erro
+== 32 ok, 0 falharam
+== 32 ok, 0 falharam
+rm -f banker banker_asan result.txt
+
+Script done on 2026-11-16 16:41:23-03:00 [COMMAND_EXIT_CODE="0"]
+Script started on 2026-11-16 16:42:01-03:00 [COMMAND="date; gcc -std=c11 -Wall -Wextra -Wpedantic -fanalyzer -c banker.c -o /dev/null; echo "analyzer exit=$?"; rm -rf /tmp/banker-clone; git clone -q https://github.com/teuss96/banker /tmp/banker-clone; cd /tmp/banker-clone; git log --oneline | head -3; ls; make clean; make; make test | grep -v " -> "; cp testes/exemplo/customer.txt testes/exemplo/commands.txt .; ./banker 10 5 7; echo "exit=$?"; cmp result.txt testes/exemplo/esperado.txt; echo "cmp=$?"; cat result.txt; ./banker 10 5; echo "exit=$?"; rm -rf /tmp/banker-clone" <not executed on terminal>]
+Mon Nov 16 16:42:01 -03 2026
+analyzer exit=0
+596326a test: cobre espaços e tabs repetidos em commands.txt
+bbbcdf3 fix: aceita espaços repetidos logo após RQ e RL
+b814cba test: cobre desfazimento de pedido inseguro seguido de RL
+Makefile  banker.c  testes
+rm -f banker banker_asan result.txt
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -g -o banker banker.c
+sh testes/run.sh ./banker
+== saida correta
+ok   - exemplo do enunciado (./banker 10 5 7)
+ok   - exemplo com fim de linha CRLF
+ok   - limite: 1 cliente e 1 recurso, liberacao maior que a alocacao
+ok   - numeros com mais de um digito e pedido de zero recursos
+ok   - pedido inseguro e desfeito e passa a caber depois de um RL
+ok   - 6 recursos: coluna mais larga que o cabecalho
+ok   - commands.txt vazio gera result.txt vazio
+ok   - linhas em branco sao ignoradas
+ok   - espacos e tabs repetidos entre os valores
+== tratamento de erro
+== 32 ok, 0 falharam
+exit=0
+cmp=0
+Allocate to customer 0 the resources 0 2 1
+Allocate to customer 2 the resources 3 0 2
+Allocate to customer 1 the resources 2 0 0
+Allocate to customer 4 the resources 0 0 2
+Release from customer 0 the resources 0 1 1
+Allocate to customer 3 the resources 2 1 1
+MAXIMUM   |   ALLOCATION  |   NEED
+7 5 3     |   0 1 0       |   7 4 3 
+3 2 2     |   2 0 0       |   1 2 2 
+9 0 2     |   3 0 2       |   6 0 0 
+2 2 2     |   2 1 1       |   0 1 1 
+4 3 3     |   0 0 2       |   4 3 1 
+AVAILABLE 3 3 2 
+The resources 3 3 2 are not enough to customer 4 request 4 0 0 
+Allocate to customer 1 the resources 1 0 2
+The customer 0 request 0 2 0 was denied because result in an unsafe state
+The customer 2 request 0 1 0 was denied because exceed its maximum allocation
+Incompatibility between customer.txt and command line: line 1 has 3 resources, command line has 2
+exit=1
+
+Script done on 2026-11-16 16:42:05-03:00 [COMMAND_EXIT_CODE="0"]
