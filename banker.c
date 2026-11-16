@@ -63,9 +63,11 @@ static int parse_list(const char *s, char sep, int *out, int max)
         s = end;
         if (*s == '\0')
             return n;
-        if (*s != sep)
+        if (sep == ' ' ? !isblank((unsigned char)*s) : *s != sep)
             return -1;
         s++;
+        while (sep == ' ' && isblank((unsigned char)*s))
+            s++;
     }
 }
 
@@ -124,8 +126,58 @@ static void load_customers(void)
     memcpy(need, maximum, (size_t)n_cust * n_res * sizeof *need);
 }
 
+/*
+ * Interpreta uma linha de commands.txt: "RQ c r1..rn", "RL c r1..rn" ou "*".
+ * Devolve 'Q', 'L' ou '*'; em `cmd` ficam o cliente (cmd[0]) e os recursos.
+ * Qualquer problema encerra o programa com mensagem.
+ */
+static char parse_command(const char *line, int no, int *cmd)
+{
+    int count;
+
+    if (strcmp(line, "*") == 0)
+        return '*';
+    if (line[0] != 'R' || (line[1] != 'Q' && line[1] != 'L') ||
+        !isblank((unsigned char)line[2]))
+        die("Fail to read commands.txt: unknown command at line %d", no);
+    count = parse_list(line + 3, ' ', cmd, n_res + 1);
+    if (count < 0)
+        die("Fail to read commands.txt: invalid format at line %d", no);
+    if (count != n_res + 1)
+        die("Incompatibility between commands.txt and command line: "
+            "line %d has %d resources, command line has %d", no, count - 1, n_res);
+    if (cmd[0] >= n_cust)
+        die("Fail to read commands.txt: line %d uses customer %d, "
+            "but customer.txt has only %d customers", no, cmd[0], n_cust);
+    return line[1];
+}
+
+/*
+ * Percorre commands.txt. Com out == NULL so valida; o arquivo inteiro e
+ * validado antes de qualquer comando ser executado.
+ */
+static void run_commands(FILE *f, FILE *out)
+{
+    int *cmd = xmalloc((size_t)(n_res + 1) * sizeof *cmd);
+    char *line = NULL;
+    size_t cap = 0;
+    int no = 0;
+
+    rewind(f);
+    while (next_line(f, &line, &cap, &no)) {
+        parse_command(line, no, cmd);
+        if (out == NULL)
+            continue;
+    }
+    if (ferror(f))
+        die("Fail to read commands.txt");
+    free(line);
+    free(cmd);
+}
+
 int main(int argc, char **argv)
 {
+    FILE *commands;
     int i;
 
     if (argc < 2)
@@ -137,7 +189,12 @@ int main(int argc, char **argv)
             die("Fail: invalid number of instances '%s' in command line", argv[i + 1]);
 
     load_customers();
+    commands = fopen("commands.txt", "r");
+    if (commands == NULL)
+        die("Fail to read commands.txt");
+    run_commands(commands, NULL);
 
+    fclose(commands);
     free(available);
     free(maximum);
     free(allocation);
