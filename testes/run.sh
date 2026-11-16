@@ -115,6 +115,13 @@ novo "$CUST" '\nRQ 0 0 2 1\n\n\n'
 echo 'Allocate to customer 0 the resources 0 2 1' > esperado.txt
 confere "linhas em branco sao ignoradas" 10 5 7
 
+novo "$CUST" 'RQ  0   0 2\t1  \nRL\t0 0  1 0\n'
+printf '%s\n' \
+    'Allocate to customer 0 the resources 0 2 1' \
+    'Release from customer 0 the resources 0 1 0' \
+    > esperado.txt
+confere "espacos e tabs repetidos entre os valores" 10 5 7
+
 echo "== tratamento de erro"
 
 novo "$CUST" '*\n'
