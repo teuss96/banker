@@ -8,7 +8,12 @@ banker: banker.c
 test: banker
 	sh testes/run.sh ./banker
 
-clean:
-	rm -f banker result.txt
+# mesma suite com AddressSanitizer e UndefinedBehaviorSanitizer
+asan: banker.c
+	$(CC) $(CFLAGS) -fsanitize=address,undefined -fno-sanitize-recover=all -o banker_asan banker.c
+	sh testes/run.sh ./banker_asan
 
-.PHONY: test clean
+clean:
+	rm -f banker banker_asan result.txt
+
+.PHONY: test asan clean
