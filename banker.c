@@ -285,6 +285,7 @@ static void print_state(FILE *out)
  */
 static char parse_command(const char *line, int no, int *cmd)
 {
+    char op;
     int count;
 
     if (strcmp(line, "*") == 0)
@@ -292,7 +293,11 @@ static char parse_command(const char *line, int no, int *cmd)
     if (line[0] != 'R' || (line[1] != 'Q' && line[1] != 'L') ||
         !isblank((unsigned char)line[2]))
         die("Fail to read commands.txt: unknown command at line %d", no);
-    count = parse_list(line + 3, ' ', cmd, n_res + 1);
+    op = line[1];
+    line += 3;
+    while (isblank((unsigned char)*line))
+        line++;
+    count = parse_list(line, ' ', cmd, n_res + 1);
     if (count < 0)
         die("Fail to read commands.txt: invalid format at line %d", no);
     if (count != n_res + 1)
@@ -301,7 +306,7 @@ static char parse_command(const char *line, int no, int *cmd)
     if (cmd[0] >= n_cust)
         die("Fail to read commands.txt: line %d uses customer %d, "
             "but customer.txt has only %d customers", no, cmd[0], n_cust);
-    return line[1];
+    return op;
 }
 
 /*
