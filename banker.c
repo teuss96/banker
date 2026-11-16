@@ -9,7 +9,13 @@
 #include <string.h>
 
 static int n_res;      /* tipos de recurso = quantidade de argumentos */
+static int n_cust;     /* clientes = linhas de customer.txt */
 static int *available; /* [n_res] */
+static int *maximum;   /* matrizes [n_cust][n_res] guardadas em linha */
+static int *allocation;
+static int *need;
+
+#define ROW(m, c) (&(m)[(size_t)(c) * n_res])
 
 /* mensagem de erro e fim da execucao; nada e gravado em result.txt antes disso */
 static void die(const char *fmt, ...)
@@ -63,6 +69,61 @@ static int parse_list(const char *s, char sep, int *out, int max)
     }
 }
 
+/*
+ * Proxima linha nao vazia de `f`, sem o fim de linha (aceita \n e \r\n) e sem
+ * espacos no final. Devolve 0 no fim do arquivo. `*no` conta as linhas lidas.
+ */
+static int next_line(FILE *f, char **line, size_t *cap, int *no)
+{
+    ssize_t len;
+
+    while ((len = getline(line, cap, f)) != -1) {
+        (*no)++;
+        while (len > 0 && isspace((unsigned char)(*line)[len - 1]))
+            (*line)[--len] = '\0';
+        if (len > 0)
+            return 1;
+    }
+    return 0;
+}
+
+/* customer.txt: uma linha por cliente, maximo de cada recurso separado por virgula */
+static void load_customers(void)
+{
+    FILE *f = fopen("customer.txt", "r");
+    char *line = NULL;
+    size_t cap = 0;
+    int no = 0;
+
+    if (f == NULL)
+        die("Fail to read customer.txt");
+    while (next_line(f, &line, &cap, &no)) {
+        int count;
+
+        maximum = realloc(maximum, (size_t)(n_cust + 1) * n_res * sizeof *maximum);
+        if (maximum == NULL)
+            die("Fail to allocate memory");
+        count = parse_list(line, ',', ROW(maximum, n_cust), n_res);
+        if (count < 0)
+            die("Fail to read customer.txt: invalid format at line %d", no);
+        if (count != n_res)
+            die("Incompatibility between customer.txt and command line: "
+                "line %d has %d resources, command line has %d", no, count, n_res);
+        n_cust++;
+    }
+    if (ferror(f))
+        die("Fail to read customer.txt");
+    if (n_cust == 0)
+        die("Fail to read customer.txt: no customers");
+    free(line);
+    fclose(f);
+
+    allocation = xmalloc((size_t)n_cust * n_res * sizeof *allocation);
+    need = xmalloc((size_t)n_cust * n_res * sizeof *need);
+    memset(allocation, 0, (size_t)n_cust * n_res * sizeof *allocation);
+    memcpy(need, maximum, (size_t)n_cust * n_res * sizeof *need);
+}
+
 int main(int argc, char **argv)
 {
     int i;
@@ -75,6 +136,11 @@ int main(int argc, char **argv)
         if (parse_list(argv[i + 1], ' ', &available[i], 1) != 1)
             die("Fail: invalid number of instances '%s' in command line", argv[i + 1]);
 
+    load_customers();
+
     free(available);
+    free(maximum);
+    free(allocation);
+    free(need);
     return 0;
 }
