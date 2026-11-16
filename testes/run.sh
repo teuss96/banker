@@ -88,6 +88,17 @@ printf '%s\n' \
     > esperado.txt
 confere "numeros com mais de um digito e pedido de zero recursos" 100 20
 
+novo '2\n2\n' 'RQ 0 1\nRQ 1 1\nRL 0 1\nRQ 1 1\nRQ 1 1\nRQ 0 1\n'
+printf '%s\n' \
+    'Allocate to customer 0 the resources 1' \
+    'The customer 1 request 1 was denied because result in an unsafe state' \
+    'Release from customer 0 the resources 1' \
+    'Allocate to customer 1 the resources 1' \
+    'Allocate to customer 1 the resources 1' \
+    'The resources 0 are not enough to customer 0 request 1 ' \
+    > esperado.txt
+confere "pedido inseguro e desfeito e passa a caber depois de um RL" 2
+
 novo '1,1,1,1,1,1\n' '*\n'
 printf '%s\n' \
     'MAXIMUM     |   ALLOCATION  |   NEED' \
