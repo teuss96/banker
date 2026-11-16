@@ -232,6 +232,52 @@ static void release(FILE *out, int c, const int *req)
     fputc('\n', out);
 }
 
+/* escreve "v1 v2 ... vn " e devolve quantos caracteres ocupou */
+static int print_cells(FILE *out, const int *v)
+{
+    int i, len = 0;
+
+    for (i = 0; i < n_res; i++)
+        len += fprintf(out, "%d ", v[i]);
+    return len;
+}
+
+/* largura de coluna: o maior entre `min` e a linha mais comprida da matriz */
+static int col_width(const int *m, int min)
+{
+    int c, i, w = min;
+
+    for (c = 0; c < n_cust; c++) {
+        int len = 0;
+
+        for (i = 0; i < n_res; i++)
+            len += snprintf(NULL, 0, "%d ", ROW(m, c)[i]);
+        if (len > w)
+            w = len;
+    }
+    return w;
+}
+
+/* comando *: tabela no mesmo alinhamento do result.txt de exemplo */
+static void print_state(FILE *out)
+{
+    /* larguras minimas = cabecalho do exemplo: "MAXIMUM   |   ALLOCATION  |   NEED" */
+    int w_max = col_width(maximum, 10);
+    int w_alloc = col_width(allocation, 12);
+    int c;
+
+    fprintf(out, "%-*s|   %-*s|   NEED\n", w_max, "MAXIMUM", w_alloc, "ALLOCATION");
+    for (c = 0; c < n_cust; c++) {
+        fprintf(out, "%*s|   ", w_max - print_cells(out, ROW(maximum, c)), "");
+        fprintf(out, "%*s|   ", w_alloc - print_cells(out, ROW(allocation, c)), "");
+        print_cells(out, ROW(need, c));
+        fputc('\n', out);
+    }
+    fprintf(out, "AVAILABLE ");
+    print_cells(out, available);
+    fputc('\n', out);
+}
+
 /*
  * Interpreta uma linha de commands.txt: "RQ c r1..rn", "RL c r1..rn" ou "*".
  * Devolve 'Q', 'L' ou '*'; em `cmd` ficam o cliente (cmd[0]) e os recursos.
@@ -279,6 +325,8 @@ static void run_commands(FILE *f, FILE *out)
             request(out, cmd[0], cmd + 1);
         else if (op == 'L')
             release(out, cmd[0], cmd + 1);
+        else
+            print_state(out);
     }
     if (ferror(f))
         die("Fail to read commands.txt");
