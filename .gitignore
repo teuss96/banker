@@ -9,7 +9,8 @@ result.txt
 # pacote de entrega
 *.tar
 
-# documentos ficam fora do repositorio
+# documentos de trabalho ficam fora do repositorio; so o README entra
 *.md
 *.html
 *.pdf
+!README.md
